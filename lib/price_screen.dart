@@ -1,10 +1,17 @@
 import 'dart:io';
 
 import 'package:bitcoin_ticker/coin_data.dart';
+import 'package:bitcoin_ticker/crypto.dart';
+import 'package:bitcoin_ticker/crypto_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
+
+import 'package:logger/logger.dart';
+
+var loggerNoStack = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
 
 class PriceScreen extends StatefulWidget {
   const PriceScreen({Key? key}) : super(key: key);
@@ -15,6 +22,37 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
+  Crypto crypto = Crypto();
+  List<CryptoModel> cryptos = <CryptoModel>[];
+
+  @override
+  void initState() {
+    super.initState();
+    getBitcoinData();
+  }
+
+  static double checkDouble(dynamic value) {
+    if (value is String) {
+      return double.parse(value);
+    } else if (value is int) {
+      return 0.0 + value;
+    } else {
+      return value;
+    }
+  }
+
+  Future<void> getBitcoinData() async {
+    dynamic cryptoData = await crypto.getCryptoData(selectedCurrency);
+    cryptos = [];
+    setState(() => {
+          cryptos.add(CryptoModel(checkDouble(cryptoData[0]['current_price']),
+              cryptoData[0]['image'], cryptoData[0]['name'])),
+          cryptos.add(CryptoModel(checkDouble(cryptoData[1]['current_price']),
+              cryptoData[1]['image'], cryptoData[1]['name'])),
+          cryptos.add(CryptoModel(checkDouble(cryptoData[2]['current_price']),
+              cryptoData[2]['image'], cryptoData[2]['name'])),
+        });
+  }
 
   CupertinoPicker getCupertinoPicker() {
     return CupertinoPicker(
@@ -24,6 +62,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectedCurrency = currenciesList[selectedIndex];
         });
+        getBitcoinData();
       },
       children: [
         for (String currency in currenciesList) Text(currency),
@@ -42,17 +81,19 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectedCurrency = value!;
         });
+        getBitcoinData();
       },
     );
   }
 
   Widget getPicker() {
-    if(kIsWeb) {
+    if (kIsWeb) {
       return getAndroidDropdownButton();
     } else {
-      return Platform.isIOS || Platform.isMacOS ? getCupertinoPicker() : getAndroidDropdownButton();
+      return Platform.isIOS || Platform.isMacOS
+          ? getCupertinoPicker()
+          : getAndroidDropdownButton();
     }
-
   }
 
   @override
@@ -65,27 +106,40 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = ? USD',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
+          for (CryptoModel crypto in cryptos)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+              child: Card(
+                color: Colors.lightBlueAccent,
+                elevation: 5.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 28.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.network(height: 50.0, width: 50.0, crypto.imageURL),
+                      const SizedBox(
+                        height: 50.0,
+                        width: 50.0,
+                      ),
+                      Text(
+                        '1 ${crypto.name} = ${crypto.currentValue}  $selectedCurrency',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ),
           Container(
             height: 150.0,
             alignment: Alignment.center,

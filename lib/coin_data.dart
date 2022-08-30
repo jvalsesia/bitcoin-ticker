@@ -23,9 +23,9 @@ const List<String> currenciesList = [
 ];
 
 const List<String> cryptoList = [
-  'BTC',
-  'ETH',
-  'LTC',
+  'bitcoin',
+  'ethereum',
+  'litecoin'''
 ];
 
 class CoinData {}
