@@ -50,7 +50,7 @@ class _PriceScreenState extends State<PriceScreen> {
     if(kIsWeb) {
       return getAndroidDropdownButton();
     } else {
-      return Platform.isIOS ? getCupertinoPicker() : getAndroidDropdownButton();
+      return Platform.isIOS || Platform.isMacOS ? getCupertinoPicker() : getAndroidDropdownButton();
     }
 
   }
