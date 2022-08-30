@@ -118,15 +118,11 @@ class _PriceScreenState extends State<PriceScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 28.0),
-                  child: Row(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.network(height: 50.0, width: 50.0, crypto.imageURL),
-                      const SizedBox(
-                        height: 50.0,
-                        width: 10.0,
-                      ),
                       Text(
                         '1 ${crypto.symbol.toUpperCase()} = ${crypto.currentValue}  $selectedCurrency',
                         textAlign: TextAlign.center,
