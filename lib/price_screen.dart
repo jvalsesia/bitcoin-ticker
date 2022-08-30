@@ -46,11 +46,11 @@ class _PriceScreenState extends State<PriceScreen> {
     cryptos = [];
     setState(() => {
           cryptos.add(CryptoModel(checkDouble(cryptoData[0]['current_price']),
-              cryptoData[0]['image'], cryptoData[0]['name'])),
+              cryptoData[0]['image'], cryptoData[0]['symbol'])),
           cryptos.add(CryptoModel(checkDouble(cryptoData[1]['current_price']),
-              cryptoData[1]['image'], cryptoData[1]['name'])),
+              cryptoData[1]['image'], cryptoData[1]['symbol'])),
           cryptos.add(CryptoModel(checkDouble(cryptoData[2]['current_price']),
-              cryptoData[2]['image'], cryptoData[2]['name'])),
+              cryptoData[2]['image'], cryptoData[2]['symbol'])),
         });
   }
 
@@ -125,10 +125,10 @@ class _PriceScreenState extends State<PriceScreen> {
                       Image.network(height: 50.0, width: 50.0, crypto.imageURL),
                       const SizedBox(
                         height: 50.0,
-                        width: 50.0,
+                        width: 10.0,
                       ),
                       Text(
-                        '1 ${crypto.name} = ${crypto.currentValue}  $selectedCurrency',
+                        '1 ${crypto.symbol.toUpperCase()} = ${crypto.currentValue}  $selectedCurrency',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 20.0,
